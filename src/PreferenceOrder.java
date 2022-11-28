@@ -15,6 +15,18 @@ public class PreferenceOrder {
         this.order = new ArrayList<Station>();
     }
 
+    public void addStation(Station station) {
+        this.order.add(station);
+    }
+
+    public void addStation(int index, Station station) {
+        this.order.add(index, station);
+    }
+
+    public void removeStation(Station station) {
+        this.order.remove(station);
+    }
+
     public void sendToTop(Station station) {
         this.order.remove(station);
         this.order.add(0, station);
