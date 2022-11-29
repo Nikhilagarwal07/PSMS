@@ -1,44 +1,51 @@
+import java.io.*;
 import java.util.*;
 
 public class PreferenceOrder {
     private ArrayList<Station> order;
 
-    public PreferenceOrder() {
+    public PreferenceOrder(File file) {
         this.order = new ArrayList<Station>();
+        
+        try {
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                Station station = new Station(line);
+                this.order.add(station);
+            }
+            
+            sc.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error occurred while reading preference order from file.");
+            e.printStackTrace();
+        }
     }
 
-    public PreferenceOrder(ArrayList<Station> order) {
+    public String toString() {
+        String str = "#\tID\tName\n";
+
+        int i = 1;
+        for (Station station : this.order) {
+            str += i++ + "\t" + station.getId() + "\t" + station.getName() + "\n";
+        }
+
+        return str;
+    }
+
+    public ArrayList<Station> getOrder() {
+        return this.order;
+    }
+
+    public void setOrder(ArrayList<Station> order) {
         this.order = order;
-    }
-
-    public void clearOrder() {
-        this.order = new ArrayList<Station>();
     }
 
     public void addStation(Station station) {
         this.order.add(station);
     }
 
-    public void addStation(int index, Station station) {
-        this.order.add(index, station);
-    }
-
-    public void removeStation(Station station) {
-        this.order.remove(station);
-    }
-
-    public void sendToTop(Station station) {
-        this.order.remove(station);
-        this.order.add(0, station);
-    }
-
-    public void sendToBottom(Station station) {
-        this.order.remove(station);
-        this.order.add(station);
-    }
-
-    public void sendToN(Station station, int n) {
-        this.order.remove(station);
-        this.order.add(n, station);
+    public void addStations(ArrayList<Station> stations) {
+        this.order.addAll(stations);
     }
 }

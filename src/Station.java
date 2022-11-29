@@ -1,55 +1,68 @@
+import java.util.*;
+
 public class Station {
-    protected String location;
-    protected int stipend;
-    protected String[] branches;
-    protected double cutoff;
-    protected int capacity;
+    private int id;
+    private String name;
+    private ArrayList<String> compulsorySubjects;
+    private ArrayList<String> branches;
 
-    public Station(String location, int stipend, String[] branches, double cutoff, int capacity) {
-        this.location = location;
-        this.stipend = stipend;
-        this.branches = branches;
-        this.cutoff = cutoff;
-        this.capacity = capacity;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public int getStipend() {
-        return stipend;
-    }
-
-    public void setStipend(int stipend) {
-        this.stipend = stipend;
-    }
-
-    public String[] getBranches() {
-        return branches;
-    }
-
-    public void setBranches(String[] branches) {
+    public Station(int id, String name, ArrayList<String> compulsorySubjects, ArrayList<String> branches) {
+        this.id = id;
+        this.name = name;
+        this.compulsorySubjects = compulsorySubjects;
         this.branches = branches;
     }
 
-    public double getCutoff() {
-        return cutoff;
+    public Station (String line) {
+        String[] data = line.split(",");
+
+        this.id = Integer.parseInt(data[0]);
+        this.name = data[1];
+        this.compulsorySubjects = new ArrayList<String>();
+        for (int i = 2; i < data.length - 1; i++) {
+            this.compulsorySubjects.add(data[i]);
+        }
+
+        this.branches = new ArrayList<String>();
+        String[] branchData = data[data.length - 1].split(" ");
+        for (int i = 1; i < branchData.length; i++) {
+            this.branches.add(branchData[i]);
+        }
     }
 
-    public void setCutoff(double cutoff) {
-        this.cutoff = cutoff;
+    public int getId() {
+        return this.id;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public String getName() {
+        return this.name;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public ArrayList<String> getCompulsorySubjects() {
+        return this.compulsorySubjects;
+    }
+
+    public ArrayList<String> getBranches() {
+        return this.branches;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCompulsorySubjects(ArrayList<String> compulsorySubjects) {
+        this.compulsorySubjects = compulsorySubjects;
+    }
+
+    public void setBranches(ArrayList<String> branches) {
+        this.branches = branches;
+    }
+
+    public String toString() {
+        return "Station " + this.id + " " + this.name + ", subjects = " + this.compulsorySubjects + " branches = " + this.branches + "\n";
     }
 }

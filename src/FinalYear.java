@@ -1,26 +1,18 @@
-import java.util.*;
+import java.io.*;
 
 public class FinalYear extends Student {
-    ArrayList<String> skills;
+    private String resume;
 
-    public FinalYear(String name, String id, String branch, float cgpa, String location, PreferenceOrder preferenceOrder, ArrayList<String> skills) {
-        super(name, id, branch, cgpa, location, preferenceOrder);
-        this.skills = skills;
+    public FinalYear(File studentFile, File preferenceOrderFile, String resume) {
+        super(studentFile, preferenceOrderFile);
+        this.resume = resume;
     }
 
-    public ArrayList<String> getSkills() {
-        return skills;
+    public String getResume() {
+        return this.resume;
     }
 
-    public void setSkills(ArrayList<String> skills) {
-        this.skills = skills;
-    }
-
-    public void addSkill(String skill) {
-        this.skills.add(skill);
-    }
-
-    public void removeSkill(String skill) {
-        this.skills.remove(skill);
+    public void setResume(String resume) {
+        this.resume = resume;
     }
 }
