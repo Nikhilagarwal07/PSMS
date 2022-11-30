@@ -2,25 +2,38 @@ import java.util.*;
 import java.io.*;
 
 public class Admin {
-    private ArrayList<Station> stations;
+    private ArrayList<Station> secondYearStations;
+    private ArrayList<Station> finalYearStations;
     private ArrayList<SecondYear> secondYearStudents;
     private ArrayList<FinalYear> finalYearStudents;
-    HashMap<Integer, Integer> secondYearAllocations;
-    HashMap<Integer, Integer> finalYearAllocations;
+    HashMap<SecondYear, Station> secondYearAllocations;
+    HashMap<FinalYear, Station> finalYearAllocations;
 
-    public Admin(ArrayList<Station> stations, ArrayList<SecondYear> secondYearStudents, ArrayList<FinalYear> finalYearStudents) {
-        this.stations = stations;
-        this.secondYearStudents = secondYearStudents;
-        this.finalYearStudents = finalYearStudents;
-        this.secondYearAllocations = new HashMap<Integer, Integer>();
-        this.finalYearAllocations = new HashMap<Integer, Integer>();
-        Collections.sort(this.secondYearStudents);
-        Collections.sort(this.finalYearStudents);
+    public Admin() {
+        this.secondYearStations = new ArrayList<Station>();
+        this.finalYearStations = new ArrayList<Station>();
+        this.secondYearStudents = new ArrayList<SecondYear>();
+        this.finalYearStudents = new ArrayList<FinalYear>();
+        this.secondYearAllocations = new HashMap<SecondYear, Station>();
+        this.finalYearAllocations = new HashMap<FinalYear, Station>();
     }
 
-    public void addStation(String line) {
+    public void addSecondYearStation(String line) {
         Station newStation = new Station(line);
-        this.stations.add(newStation);
+        this.secondYearStations.add(newStation);
+
+        for (SecondYear student : this.secondYearStudents) {
+            student.addStation(newStation);
+        }
+
+        for (FinalYear student : this.finalYearStudents) {
+            student.addStation(newStation);
+        }
+    }
+
+    public void addFinalYearStation(String line) {
+        Station newStation = new Station(line);
+        this.finalYearStations.add(newStation);
 
         for (SecondYear student : this.secondYearStudents) {
             student.addStation(newStation);
@@ -51,6 +64,8 @@ public class Admin {
         for (SecondYear student : this.secondYearStudents) {
             student.addStations(tempStations);
         }
+
+        this.secondYearStations.addAll(tempStations);
     }
 
     public void addFinalYearStations(File file) {
@@ -73,19 +88,21 @@ public class Admin {
         for (FinalYear student : this.finalYearStudents) {
             student.addStations(tempStations);
         }
+
+        this.finalYearStations.addAll(tempStations);
     }
 
     public void addSecondYearStudent(File studentFile, File preferenceOrderFile) {
         SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile);
         this.secondYearStudents.add(newStudent);
-        newStudent.addStations(this.stations);
+        newStudent.addStations(this.secondYearStations);
         Collections.sort(this.secondYearStudents);
     }
 
     public void addFinalYearStudent(File studentFile, File preferenceOrderFile, String resume) {
         FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, resume);
         this.finalYearStudents.add(newStudent);
-        newStudent.addStations(this.stations);
+        newStudent.addStations(this.secondYearStations);
         Collections.sort(this.finalYearStudents);
     }
 }

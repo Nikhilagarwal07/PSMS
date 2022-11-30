@@ -8,6 +8,17 @@ public class Student implements Eligible, Comparable<Student> {
     protected String branch;
     protected ArrayList<String> subjects;
     protected PreferenceOrder preferenceOrder;
+    /* 
+     * status 'a' : accepted
+     * status 'r' : rejected
+     * status 'w' : withdrawn
+     */
+    protected char status;
+    /* 
+     * finalized acts as a security check.
+     * once accepted / withdrawn, student should not be able to unfreeze
+     */
+    protected boolean finalized;
 
     public Student(String name, float cgpa, int id, String branch, ArrayList<String> subjects) {
         this.name = name;
@@ -15,6 +26,14 @@ public class Student implements Eligible, Comparable<Student> {
         this.id = id;
         this.branch = branch;
         this.subjects = subjects;
+        /*
+         * default status = rejected
+         * consider for further rounds until accepted or withdrawn
+         * default finalized = false
+         * student can change status until finalized
+         */
+        this.status = 'r';
+        this.finalized = false;
     }
 
     public Student(File studentFile, File preferenceOrderFile) {
@@ -42,6 +61,9 @@ public class Student implements Eligible, Comparable<Student> {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        } finally {
+            this.status = 'r';
+            this.finalized = false;
         }
     }
 
@@ -140,18 +162,66 @@ public class Student implements Eligible, Comparable<Student> {
         }
     }
 
-    public void acceptAllotment() {
-        // TODO Auto-generated method stub
+    public void finalize() {
+        this.finalized = true;
+    }
+    
+    @Override
+    public boolean isEligible(Station station) {
+        ArrayList<String> branches = station.getBranches();
         
+        for (String branch : branches) {
+            if (this.branch.equals(branch)) {
+                ArrayList<String> compulsorySubjects = station.getCompulsorySubjects();
+
+                for (String compulsorySubject : compulsorySubjects) {
+                    if (!this.subjects.contains(compulsorySubject)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public void rejectAllotment() {
-        // TODO Auto-generated method stub
-        
+    /* status changes only allowed if not yet finalized. */
+    @Override
+    public void accept() {
+        if (!this.finalized) {
+            this.status = 'a';
+            finalize();
+        }
     }
 
+    @Override
+    public void reject() {
+        if (!this.finalized) {
+            this.status = 'r';
+            finalize();
+        }
+    }
+
+    @Override
     public void withdraw() {
-        // TODO Auto-generated method stub
-        
+        if (!this.finalized) {
+            this.status = 'w';
+            finalize();
+        }      
+    }
+
+    /* status getters */
+    public boolean hasAccepted() {
+        return  this.status == 'a';
+    }
+
+    public boolean hasRejected() {
+        return this.status == 'r';
+    }
+
+    public boolean hasWithdrawn() {
+        return this.status == 'w';
     }
 }
