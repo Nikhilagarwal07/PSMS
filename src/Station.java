@@ -17,7 +17,7 @@ public class Station {
         this.branches = branches;
     }
 
-    public Station (String line) {
+    public Station(String line) {
         try {
             String[] data = line.split(",");
     
@@ -32,7 +32,7 @@ public class Station {
     
             this.branches = new ArrayList<String>();
             String[] branchData = data[data.length - 1].split(" ");
-            for (int i = 1; i < branchData.length; i++) {
+            for (int i = 0; i < branchData.length; i++) {
                 this.branches.add(branchData[i]);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -57,15 +57,15 @@ public class Station {
         return this.occupied;
     }
 
-    public boolean isOccupied() {
-        return this.occupied == this.capacity;
+    public boolean hasVacancy() {
+        return this.occupied < this.capacity;
     }
 
-    public void incrementCapacity() {
+    public void incrementOccupied() {
         this.occupied++;
     }
 
-    public void decrementCapacity() {
+    public void decrementOccupied() {
         this.occupied--;
     }
 
@@ -102,6 +102,6 @@ public class Station {
     }
 
     public String toString() {
-        return "Station " + this.id + " " + this.name + ", subjects = " + this.compulsorySubjects + " branches = " + this.branches + "\n";
+        return "Station " + this.id + " " + this.name + ", subjects = " + this.compulsorySubjects + " branches = " + this.branches;
     }
 }

@@ -24,9 +24,6 @@ public class Allocator {
         for (Map.Entry<T, Station> entry : currentAllotment.entrySet()) {
             T student = entry.getKey();
             Station station = entry.getValue();
-
-            /* default to no allotment (in case preference list cannot give valid allotment) */
-            newAllotment.put(student, null);
             
             if (student.hasAccepted()) {
                 /* accepted allotment */
@@ -34,26 +31,29 @@ public class Allocator {
             } else if (student.hasRejected()) {
                 /* awaiting new allotment */
                 if (station != null) {
-                    station.decrementCapacity();
+                    station.decrementOccupied();
                 }
             } else if (student.hasWithdrawn()) {
                 /* withdrawn */
                 if (station != null) {
-                    station.decrementCapacity();
+                    station.decrementOccupied();
                 }
+
+                newAllotment.put(student, null);
             } else {
                 /* invalid status, withdraw student from process */
                 if (station != null) {
-                    station.decrementCapacity();
+                    station.decrementOccupied();
                 }
-
+                
+                newAllotment.put(student, null);
                 student.withdraw();
             }
         }
         
         /* After cleanup, proceed with allotment for students with status 'r'. */
         Collections.sort(students);
-
+    
         for (T student : students) {
             if (student.hasAccepted()) {
                 /* accepted students are done */
@@ -61,9 +61,9 @@ public class Allocator {
             } else if (student.hasRejected()) {
                 ArrayList<Station> stations = student.getPreferenceOrder().getOrder();
                 for (Station station : stations) {
-                    if (!station.isOccupied() && student.isEligible(station)) {
+                    if (student.isEligible(station) && station.hasVacancy()) {
                         newAllotment.put(student, station);
-                        station.setOccupied(station.getOccupied() + 1);
+                        station.incrementOccupied();
                         break;
                     }
                 }

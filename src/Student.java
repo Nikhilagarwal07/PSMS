@@ -36,7 +36,7 @@ public class Student implements Eligible, Comparable<Student> {
         this.finalized = false;
     }
 
-    public Student(File studentFile, File preferenceOrderFile) {
+    public Student(File studentFile, File preferenceOrderFile, HashMap<Integer, Station> stations) {
         try {
             Scanner sc = new Scanner(studentFile);
             String line = sc.nextLine();
@@ -51,13 +51,14 @@ public class Student implements Eligible, Comparable<Student> {
             this.branch = data[3];
 
             this.subjects = new ArrayList<String>();
-            for (int i = 4; i < data.length; i++) {
-                this.subjects.add(data[i]);
+            String[] subjects = data[4].split(" ");
+            for (int i = 0; i < subjects.length; i++) {
+                this.subjects.add(subjects[i]);
             }
 
             sc.close();
 
-            this.preferenceOrder = new PreferenceOrder(preferenceOrderFile);
+            this.preferenceOrder = new PreferenceOrder(preferenceOrderFile, stations);
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
@@ -68,7 +69,7 @@ public class Student implements Eligible, Comparable<Student> {
     }
 
     public String toString() {
-        return this.name + ", " + this.cgpa + ", " + this.id + ", " + this.branch + ", " + this.subjects + "\n";
+        return this.name + ", " + this.cgpa + ", " + this.id + ", " + this.branch + ", " + this.subjects;
     }
 
     public String getName() {
@@ -127,23 +128,10 @@ public class Student implements Eligible, Comparable<Student> {
         this.preferenceOrder.addStations(stations);
     }
 
-    public boolean isEligible(PreferenceOrder preferenceOrder) {
-        ArrayList<Station> order = preferenceOrder.getOrder();
-        for (int i = 0; i < order.size(); i++) {
-            Station station = order.get(i);
-            if (station.getBranches().contains(this.branch)) {
-                ArrayList<String> compulsorySubjects = station.getCompulsorySubjects();
-                for (int j = 0; j < compulsorySubjects.size(); j++) {
-                    if (!this.subjects.contains(compulsorySubjects.get(j))) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
+    public void addStations(HashMap<Integer, Station> stations) {
+        for (Map.Entry<Integer, Station> stationsElement : stations.entrySet()) {
+            this.preferenceOrder.addStation(stationsElement.getValue());
         }
-
-        return false;
     }
 
     public int compareTo(Student student) {
@@ -169,7 +157,7 @@ public class Student implements Eligible, Comparable<Student> {
     @Override
     public boolean isEligible(Station station) {
         ArrayList<String> branches = station.getBranches();
-        
+
         for (String branch : branches) {
             if (this.branch.equals(branch)) {
                 ArrayList<String> compulsorySubjects = station.getCompulsorySubjects();
@@ -209,7 +197,7 @@ public class Student implements Eligible, Comparable<Student> {
         if (!this.finalized) {
             this.status = 'w';
             finalize();
-        }      
+        }
     }
 
     /* status getters */

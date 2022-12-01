@@ -4,17 +4,23 @@ import java.util.*;
 public class PreferenceOrder {
     private ArrayList<Station> order;
 
-    public PreferenceOrder(File file) {
+    public PreferenceOrder(File file, HashMap<Integer, Station> stations) {
+        /* build preference order from file containing station id */
         this.order = new ArrayList<Station>();
-        
+
         try {
             Scanner sc = new Scanner(file);
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                Station station = new Station(line);
-                this.order.add(station);
+            while (sc.hasNextInt()) {
+                int stationId = sc.nextInt();
+
+                if (stations.containsKey(stationId)) {
+                    this.order.add(stations.get(stationId));
+                } else {
+                    /* invalid station */
+                    continue;
+                }
             }
-            
+
             sc.close();
         } catch (FileNotFoundException e) {
             System.out.println("Error occurred while reading preference order from file.");

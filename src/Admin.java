@@ -2,42 +2,58 @@ import java.util.*;
 import java.io.*;
 
 public class Admin {
-    private ArrayList<Station> secondYearStations;
-    private ArrayList<Station> finalYearStations;
+    private HashMap<Integer, Station> secondYearStations;
+    private HashMap<Integer, Station> finalYearStations;
     private ArrayList<SecondYear> secondYearStudents;
     private ArrayList<FinalYear> finalYearStudents;
-    HashMap<SecondYear, Station> secondYearAllocations;
-    HashMap<FinalYear, Station> finalYearAllocations;
+    private HashMap<SecondYear, Station> secondYearAllocations;
+    private HashMap<FinalYear, Station> finalYearAllocations;
 
     public Admin() {
-        this.secondYearStations = new ArrayList<Station>();
-        this.finalYearStations = new ArrayList<Station>();
+        this.secondYearStations = new HashMap<Integer, Station>();
+        this.finalYearStations = new HashMap<Integer, Station>();
         this.secondYearStudents = new ArrayList<SecondYear>();
         this.finalYearStudents = new ArrayList<FinalYear>();
         this.secondYearAllocations = new HashMap<SecondYear, Station>();
         this.finalYearAllocations = new HashMap<FinalYear, Station>();
     }
 
+    public HashMap<Integer, Station> getSecondYearStations() {
+        return this.secondYearStations;
+    }
+
+    public HashMap<Integer, Station> getFinalYearStations() {
+        return this.finalYearStations;
+    }
+
+    public ArrayList<SecondYear> getSecondYearStudents() {
+        return this.secondYearStudents;
+    }
+
+    public ArrayList<FinalYear> getFinalYearStudents() {
+        return this.finalYearStudents;
+    }
+
+    public HashMap<SecondYear, Station> getSecondYearAllocations() {
+        return this.secondYearAllocations;
+    }
+
+    public HashMap<FinalYear, Station> getFinalYearAllocations() {
+        return this.finalYearAllocations;
+    }
+
     public void addSecondYearStation(String line) {
         Station newStation = new Station(line);
-        this.secondYearStations.add(newStation);
+        this.secondYearStations.put(newStation.getId(), newStation);
 
         for (SecondYear student : this.secondYearStudents) {
-            student.addStation(newStation);
-        }
-
-        for (FinalYear student : this.finalYearStudents) {
             student.addStation(newStation);
         }
     }
 
     public void addFinalYearStation(String line) {
         Station newStation = new Station(line);
-        this.finalYearStations.add(newStation);
-
-        for (SecondYear student : this.secondYearStudents) {
-            student.addStation(newStation);
-        }
+        this.finalYearStations.put(newStation.getId(), newStation);
 
         for (FinalYear student : this.finalYearStudents) {
             student.addStation(newStation);
@@ -65,7 +81,9 @@ public class Admin {
             student.addStations(tempStations);
         }
 
-        this.secondYearStations.addAll(tempStations);
+        for (Station station : tempStations) {
+            this.secondYearStations.put(station.getId(), station);
+        }
     }
 
     public void addFinalYearStations(File file) {
@@ -89,20 +107,26 @@ public class Admin {
             student.addStations(tempStations);
         }
 
-        this.finalYearStations.addAll(tempStations);
+        for (Station station : tempStations) {
+            this.finalYearStations.put(station.getId(), station);
+        }
     }
 
     public void addSecondYearStudent(File studentFile, File preferenceOrderFile) {
-        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile);
+        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile, this.secondYearStations);
         this.secondYearStudents.add(newStudent);
-        newStudent.addStations(this.secondYearStations);
-        Collections.sort(this.secondYearStudents);
+    }
+
+    public void addSecondYearStudent(SecondYear secondYear) {
+        this.secondYearStudents.add(secondYear);
     }
 
     public void addFinalYearStudent(File studentFile, File preferenceOrderFile, String resume) {
-        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, resume);
+        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, this.finalYearStations, resume);
         this.finalYearStudents.add(newStudent);
-        newStudent.addStations(this.secondYearStations);
-        Collections.sort(this.finalYearStudents);
+    }
+
+    public void addFinalYearStudent(FinalYear finalYear) {
+        this.finalYearStudents.add(finalYear);
     }
 }
