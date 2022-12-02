@@ -28,6 +28,53 @@ public class PreferenceOrder {
         }
     }
 
+    public void sendToTop(Station station) {
+        /* move station to top of preference order */
+        this.order.remove(station);
+        this.order.add(0, station);
+    }
+
+    public void sendToBottom(Station station) {
+        /* move station to bottom of preference order */
+        this.order.remove(station);
+        this.order.add(station);
+    }
+
+    public void sendUp(Station station) {
+        /* move station up in preference order */
+        int index = this.order.indexOf(station);
+        if (index == 0) {
+            /* station is already at top */
+            return;
+        }
+
+        this.order.remove(station);
+        this.order.add(index - 1, station);
+    }
+
+    public void sendDown(Station station) {
+        /* move station down in preference order */
+        int index = this.order.indexOf(station);
+        if (index == this.order.size() - 1) {
+            /* station is already at bottom */
+            return;
+        }
+
+        this.order.remove(station);
+        this.order.add(index + 1, station);
+    }
+
+    public void sendToN(Station station, int n) {
+        /* move station to nth position in preference order */
+        if (n < 1 || n > this.order.size()) {
+            /* invalid n */
+            return;
+        }
+
+        this.order.remove(station);
+        this.order.add(n - 1, station);
+    }
+
     public String toString() {
         String str = "#\tID\tName\n";
 

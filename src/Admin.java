@@ -1,63 +1,96 @@
 import java.util.*;
 import java.io.*;
 
-public class Admin {
-    private HashMap<Integer, Station> secondYearStations;
-    private HashMap<Integer, Station> finalYearStations;
-    private ArrayList<SecondYear> secondYearStudents;
-    private ArrayList<FinalYear> finalYearStudents;
-    private HashMap<SecondYear, Station> secondYearAllocations;
-    private HashMap<FinalYear, Station> finalYearAllocations;
+public class Admin implements Runnable {
+    /*
+     * This is the Admin class. 
+     * It is used for allotment, managing students, and managing stations.
+     * Only one instance of admin will be available at a time, created at login
+     * and destroyed at logout.
+     */
+
+    public Thread t;
 
     public Admin() {
-        this.secondYearStations = new HashMap<Integer, Station>();
-        this.finalYearStations = new HashMap<Integer, Station>();
-        this.secondYearStudents = new ArrayList<SecondYear>();
-        this.finalYearStudents = new ArrayList<FinalYear>();
-        this.secondYearAllocations = new HashMap<SecondYear, Station>();
-        this.finalYearAllocations = new HashMap<FinalYear, Station>();
+        this.t = new Thread(this, "Admin");
+    }
+
+    public void run() {
+        System.out.println("Admin thread started.");
     }
 
     public HashMap<Integer, Station> getSecondYearStations() {
-        return this.secondYearStations;
+        return AppData.getSecondYearStations();
+    }
+
+    public void setSecondYearStations(HashMap<Integer, Station> secondYearStations) {
+        AppData.setSecondYearStations(secondYearStations);
     }
 
     public HashMap<Integer, Station> getFinalYearStations() {
-        return this.finalYearStations;
+        return AppData.getFinalYearStations();
+    }
+
+    public void setFinalYearStations(HashMap<Integer, Station> finalYearStations) {
+        AppData.setFinalYearStations(finalYearStations);
     }
 
     public ArrayList<SecondYear> getSecondYearStudents() {
-        return this.secondYearStudents;
+        return AppData.getSecondYearStudents();
+    }
+
+    public void setSecondYearStudents(ArrayList<SecondYear> secondYearStudents) {
+        AppData.setSecondYearStudents(secondYearStudents);
     }
 
     public ArrayList<FinalYear> getFinalYearStudents() {
-        return this.finalYearStudents;
+        return AppData.getFinalYearStudents();
+    }
+
+    public void setFinalYearStudents(ArrayList<FinalYear> finalYearStudents) {
+        AppData.setFinalYearStudents(finalYearStudents);
     }
 
     public HashMap<SecondYear, Station> getSecondYearAllocations() {
-        return this.secondYearAllocations;
+        return AppData.getSecondYearAllocations();
+    }
+
+    public void setSecondYearAllocations(HashMap<SecondYear, Station> secondYearAllocations) {
+        AppData.setSecondYearAllocations(secondYearAllocations);
     }
 
     public HashMap<FinalYear, Station> getFinalYearAllocations() {
-        return this.finalYearAllocations;
+        return AppData.getFinalYearAllocations();
+    }
+
+    public void setFinalYearAllocations(HashMap<FinalYear, Station> finalYearAllocations) {
+        AppData.setFinalYearAllocations(finalYearAllocations);
     }
 
     public void addSecondYearStation(String line) {
         Station newStation = new Station(line);
-        this.secondYearStations.put(newStation.getId(), newStation);
+        HashMap<Integer, Station> secondYearStations = this.getSecondYearStations();
+        secondYearStations.put(newStation.getId(), newStation);
+        this.setSecondYearStations(secondYearStations);
 
-        for (SecondYear student : this.secondYearStudents) {
+        ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
+        for (SecondYear student : secondYearStudents) {
             student.addStation(newStation);
         }
+        this.setSecondYearStudents(secondYearStudents);
     }
 
     public void addFinalYearStation(String line) {
         Station newStation = new Station(line);
-        this.finalYearStations.put(newStation.getId(), newStation);
+        HashMap<Integer, Station> finalYearStations = this.getFinalYearStations();
+        finalYearStations.put(newStation.getId(), newStation);
+        this.setFinalYearStations(finalYearStations);
 
-        for (FinalYear student : this.finalYearStudents) {
+        ArrayList<FinalYear> finalYearStudents = this.getFinalYearStudents();
+        for (FinalYear student : finalYearStudents) {
             student.addStation(newStation);
         }
+        this.setFinalYearStudents(finalYearStudents);
     }
 
     public void addSecondYearStations(File file) {
@@ -77,13 +110,17 @@ public class Admin {
             e.printStackTrace();
         }
 
-        for (SecondYear student : this.secondYearStudents) {
+        ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
+        for (SecondYear student : secondYearStudents) {
             student.addStations(tempStations);
         }
+        this.setSecondYearStudents(secondYearStudents);
 
+        HashMap<Integer, Station> secondYearStations = this.getSecondYearStations();
         for (Station station : tempStations) {
-            this.secondYearStations.put(station.getId(), station);
+            secondYearStations.put(station.getId(), station);
         }
+        this.setSecondYearStations(secondYearStations);
     }
 
     public void addFinalYearStations(File file) {
@@ -103,30 +140,41 @@ public class Admin {
             e.printStackTrace();
         }
 
-        for (FinalYear student : this.finalYearStudents) {
+        for (FinalYear student : this.getFinalYearStudents()) {
             student.addStations(tempStations);
         }
 
+        HashMap<Integer, Station> finalYearStations = this.getFinalYearStations();
         for (Station station : tempStations) {
-            this.finalYearStations.put(station.getId(), station);
+            finalYearStations.put(station.getId(), station);
         }
+
+        this.setFinalYearStations(finalYearStations);
     }
 
     public void addSecondYearStudent(File studentFile, File preferenceOrderFile) {
-        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile, this.secondYearStations);
-        this.secondYearStudents.add(newStudent);
+        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile, AppData.getSecondYearStations());
+        ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
+        secondYearStudents.add(newStudent);
+        this.setSecondYearStudents(secondYearStudents);
     }
 
     public void addSecondYearStudent(SecondYear secondYear) {
-        this.secondYearStudents.add(secondYear);
+        ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
+        secondYearStudents.add(secondYear);
+        this.setSecondYearStudents(secondYearStudents);
     }
 
     public void addFinalYearStudent(File studentFile, File preferenceOrderFile, String resume) {
-        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, this.finalYearStations, resume);
-        this.finalYearStudents.add(newStudent);
+        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, AppData.getFinalYearStations(), resume);
+        ArrayList<FinalYear> finalYearStudents = this.getFinalYearStudents();
+        finalYearStudents.add(newStudent);
+        this.setFinalYearStudents(finalYearStudents);
     }
 
     public void addFinalYearStudent(FinalYear finalYear) {
-        this.finalYearStudents.add(finalYear);
+        ArrayList<FinalYear> finalYearStudents = this.getFinalYearStudents();
+        finalYearStudents.add(finalYear);
+        this.setFinalYearStudents(finalYearStudents);
     }
 }

@@ -1,7 +1,9 @@
 import java.io.*;
 import java.util.*;
 
-public class Student implements Eligible, Comparable<Student> {
+public class Student implements Eligible, Comparable<Student>, Runnable {
+    public Thread t;
+
     protected String name;
     protected float cgpa;
     protected int id;
@@ -16,11 +18,13 @@ public class Student implements Eligible, Comparable<Student> {
     protected char status;
     /* 
      * finalized acts as a security check.
-     * once accepted / withdrawn, student should not be able to unfreeze
+     * once accepted / withdrawn, student should not be able to unfreeze.
      */
     protected boolean finalized;
 
     public Student(String name, float cgpa, int id, String branch, ArrayList<String> subjects) {
+        this.t = new Thread(this, "Student");
+
         this.name = name;
         this.cgpa = cgpa;
         this.id = id;
@@ -37,6 +41,8 @@ public class Student implements Eligible, Comparable<Student> {
     }
 
     public Student(File studentFile, File preferenceOrderFile, HashMap<Integer, Station> stations) {
+        this.t = new Thread(this, "Student");
+
         try {
             Scanner sc = new Scanner(studentFile);
             String line = sc.nextLine();
@@ -66,6 +72,10 @@ public class Student implements Eligible, Comparable<Student> {
             this.status = 'r';
             this.finalized = false;
         }
+    }
+
+    public void run() {
+        System.out.println("Student " + this.id + " is running.");
     }
 
     public String toString() {
