@@ -4,16 +4,15 @@ public class AppData {
     /*
      * This class is used to store all the data that is used by the application.
      * This class has only static fields and methods. It is not instantiated.
-     * Its only methods are getters and setters. All other methods are in admin
-     * class, and access is provided to them through getters and setters only.
+     * Its only methods are getters and setters.
      */
 
-    private static HashMap<Integer, Station> secondYearStations;
-    private static HashMap<Integer, Station> finalYearStations;
-    private static ArrayList<SecondYear> secondYearStudents;
-    private static ArrayList<FinalYear> finalYearStudents;
-    private static HashMap<SecondYear, Station> secondYearAllocations;
-    private static HashMap<FinalYear, Station> finalYearAllocations;
+    private static HashMap<Integer, Station> secondYearStations = new HashMap<Integer, Station>();
+    private static HashMap<Integer, Station> finalYearStations = new HashMap<Integer, Station>();
+    private static ArrayList<SecondYear> secondYearStudents = new ArrayList<SecondYear>();
+    private static ArrayList<FinalYear> finalYearStudents = new ArrayList<FinalYear>();
+    private static HashMap<SecondYear, Station> secondYearAllocations = new HashMap<SecondYear, Station>();
+    private static HashMap<FinalYear, Station> finalYearAllocations = new HashMap<FinalYear, Station>();
 
     public static HashMap<Integer, Station> getSecondYearStations() {
         return AppData.secondYearStations;

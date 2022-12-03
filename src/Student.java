@@ -198,7 +198,6 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
     public void reject() {
         if (!this.finalized) {
             this.status = 'r';
-            finalize();
         }
     }
 

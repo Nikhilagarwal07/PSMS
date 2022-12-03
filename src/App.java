@@ -1,4 +1,3 @@
-import java.io.*;
 import java.util.*;
 
 public class App {
@@ -12,11 +11,9 @@ public class App {
     public static void clearScreen() {  
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
-    }  
+    }
 
     public static void main(String[] args) throws Exception {
-        clearScreen();
-
         /*
         ArrayList<Station> adsfhadshf = new ArrayList<Station>();
         adsfhadshf.add(null);
@@ -81,11 +78,17 @@ public class App {
         }
 
         */
+        
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();
+
         Scanner sc = new Scanner(System.in);
         boolean isRunning = true;
         State state = State.HOME;
 
         while (isRunning) {
+            clearScreen();
+
             switch (state) {
                 case HOME:
                     System.out.println("Welcome to the Placement Portal");
@@ -95,6 +98,7 @@ public class App {
                     System.out.print("Enter your choice: ");
                     
                     int choice = sc.nextInt();
+                    
                     if (choice == 1) {
                         state = State.ADMIN_LOGIN;
                         clearScreen();
@@ -103,6 +107,8 @@ public class App {
                         clearScreen();
                     } else if (choice == 3) {
                         isRunning = false;
+                        clearScreen();
+                    } else if (choice == 4) {
                         clearScreen();
                     } else {
                         clearScreen();
@@ -116,14 +122,17 @@ public class App {
                     System.out.print("Enter your password: ");
                     String password = sc.next();
 
-                    System.out.println(password);
-
-                    if (password.equals("password")) {
+                    if (password.equals("p")) {
                         state = State.ADMIN_HOME;
                         clearScreen();
                     } else {
-                        System.out.println("Invalid username or password");
-                        Thread.sleep(2000);
+                        System.out.println("Invalid password");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         state = State.HOME;
                         clearScreen();
                     }
@@ -132,26 +141,13 @@ public class App {
                 
                 case STUDENT_LOGIN:
                     System.out.println("Student Login");
-                    System.out.print("Enter your roll number: ");
-                    int rollNumber = sc.nextInt();
-
-                    System.out.println(rollNumber);
-
-                    
                     break;
 
                 case ADMIN_HOME:
-                    System.out.println("Admin Home");
-                    System.out.println("1. Add Second Year Stations");
-                    System.out.println("2. Add Second Year Students");
-                    System.out.println("3. Allocate Second Year Students");
-                    System.out.println("4. Freeze Second Year Allocations");
-                    System.out.println("5. Add Final Year Stations");
-                    System.out.println("6. Add Final Year Students");
-                    System.out.println("7. Allocate Final Year Students");
-                    System.out.println("8. Freeze Final Year Allocations");
-                    System.out.println("9. Logout");
-
+                    Admin admin = new Admin(sc);
+                    admin.start();
+                    admin.t.join();
+                    state = State.HOME;
                     break;
                 
                 default:
