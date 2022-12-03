@@ -6,7 +6,8 @@ public class Admin implements Runnable {
      * This is the Admin class. 
      * It is used for allotment, managing students, and managing stations.
      * Only one instance of admin will be available at a time, created at login
-     * and destroyed at logout.
+     * and destroyed at logout. This doesn't affect the program data; all the data
+     * is stored in the AppData class.
      */
 
     enum State {
@@ -197,7 +198,7 @@ public class Admin implements Runnable {
                         System.out.println(this.showSecondYearAllocations());
                         pressEnterToContinue(sc);
                     } else if (choice == 2) {
-                        System.out.println("Are you sure you want to get next iteration? (y/n)");
+                        System.out.print("Are you sure you want to get next iteration? (y/n) ");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
                             Allocator.allocate(this.getSecondYearAllocations(), this.getSecondYearStudents());
@@ -209,11 +210,11 @@ public class Admin implements Runnable {
                         pressEnterToContinue(sc);
                     } else if (choice == 3) {
                         App.clearScreen();
-                        System.out.println(this.getSecondYearAllocations());
-                        System.out.println("Are you sure you want to finalize the allotment? (y/n)");
+                        System.out.println(this.showSecondYearAllocations());
+                        System.out.print("Are you sure you want to finalize the allotment? (y/n)");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
-                            this.finalizeSecondYearAllocations(new File("FinalSecondYearAllotments.txt"));
+                            this.finalizeSecondYearAllocations(new File("src\\SecondYearAllotments.txt"));
                             System.out.println("Allotment finalized.");
                         } else {
                             System.out.println("Allotment not finalized.");
@@ -230,22 +231,498 @@ public class Admin implements Runnable {
                             e.printStackTrace();
                         }
                     }
-
                     break;
                 
                 case SECOND_YEAR_STUDENTS:
+                    System.out.println("Second Year Students");
+                    System.out.println("1. View Students");
+                    System.out.println("2. Add Student");
+                    System.out.println("3. Remove Student");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to view student details: ");
+                        String rollNumber = sc.next();
+
+                        SecondYear tempStudent = null;
+                        for (SecondYear student : this.getSecondYearStudents()) {
+                            if (student.getId().equals(rollNumber)) {
+                                tempStudent = student;
+                                break;
+                            }
+                        }
+
+                        if (tempStudent != null) {
+                            System.out.println(tempStudent);
+                        } else {
+                            System.out.println("Student not found.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        App.clearScreen();
+                        System.out.println("Enter student details: ");
+                        System.out.print("Name: ");
+                        String name = sc.next();
+                        System.out.print("CGPA: ");
+                        float cgpa = sc.nextFloat();
+                        while (cgpa < 0 || cgpa > 10) {
+                            System.out.println("Invalid CGPA. Please enter a valid CGPA: ");
+                            cgpa = sc.nextFloat();
+                        }
+                        System.out.print("ID: ");
+                        String id = sc.next();
+                        System.out.print("Branch: ");
+                        String branch = sc.next();
+                        ArrayList<String> subjects;
+                        while (true) {
+                            System.out.println("Enter subjects (Enter 'done' to stop): ");
+                            subjects = new ArrayList<>();
+                            String subject;
+                            while (true) {
+                                subject = sc.next();
+                                if (subject.equals("done")) {
+                                    break;
+                                }
+                                subjects.add(subject);
+                            }
+
+                            if (subjects.size() == 0) {
+                                System.out.println("Please enter at least one subject.");
+                            } else {
+                                break;
+                            }
+                        }
+
+                        SecondYear student = new SecondYear(name, cgpa, id, branch, subjects);
+                        this.addSecondYearStudent(student);
+                        System.out.println("Student added successfully.");
+                        pressEnterToContinue(sc);
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to remove student: ");
+                        String rollNumber = sc.next();
+
+                        SecondYear tempStudent = null;
+                        for (SecondYear student : this.getSecondYearStudents()) {
+                            if (student.getId().equals(rollNumber)) {
+                                tempStudent = student;
+                                break;
+                            }
+                        }
+
+                        if (tempStudent != null) {
+                            ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
+                            secondYearStudents.remove(tempStudent);
+                            this.setSecondYearStudents(secondYearStudents);
+                            System.out.println("Student removed.");
+                        } else {
+                            System.out.println("Student not found.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.SECOND_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 
                 case SECOND_YEAR_STATIONS:
+                    System.out.println("Second Year Stations");
+                    System.out.println("1. View Stations");
+                    System.out.println("2. Add Stations");
+                    System.out.println("3. Edit Station");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        int id = -1;
+                        try {
+                            System.out.print("Enter ID to view station details: ");
+                            id = sc.nextInt();
+                        } catch (Exception e) {
+                            
+                        }
+
+                        Station tempStation = null;
+                        if (this.getSecondYearStations().containsKey(id)) {
+                            tempStation = this.getSecondYearStations().get(id);
+                        }
+
+                        if (tempStation == null) {
+                            System.out.println("Station not found.");
+                        } else {
+                            System.out.println(tempStation);
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        App.clearScreen();
+                        System.out.print("Enter path of file containing stations: ");
+                        String path = sc.next();
+                        File file = new File(path);
+                        if (!file.exists()) {
+                            System.out.println("File not found.");
+                            pressEnterToContinue(sc);
+                            break;
+                        } else {
+                            this.addSecondYearStations(file);
+                            System.out.println("Stations added successfully.");
+                            pressEnterToContinue(sc);
+                        }
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to edit station: ");
+                        int id = sc.nextInt();
+                        if (!this.getSecondYearStations().containsKey(id)) {
+                            System.out.println("Station not found.");
+                            pressEnterToContinue(sc);
+                            break;
+                        }
+
+                        Station station = this.getSecondYearStations().get(id);
+                        System.out.println("Editing " + station.getName());
+                        System.out.println(station);
+                        System.out.println("Enter new details: ");
+                        System.out.print("Stipend: ");
+                        int stipend = 0;
+                        try {
+                            stipend = sc.nextInt();
+                        } catch (Exception e) {
+
+                        }
+                        station.setStipend(stipend);
+                        System.out.print("Location: ");
+                        String location = sc.next();
+                        station.setLocation(location);
+                        this.getSecondYearStations().put(id, station);
+
+                        System.out.println("Station edited successfully.");
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.SECOND_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 
                 case FINAL_YEAR_ALLOTMENT:
+                    System.out.println("Final Year Allotment");
+                    System.out.println("1. View Current Allotment");
+                    System.out.println("2. Next Iteration");
+                    System.out.println("3. Finalize Allotment");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        System.out.println(this.showFinalYearAllocations());
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        System.out.print("Are you sure you want to get next iteration? (y/n) ");
+                        String confirm = sc.next();
+                        if (confirm.equals("y")) {
+                            Allocator.allocate(this.getFinalYearAllocations(), this.getFinalYearStudents());
+                            System.out.println("Next Iteration completed.");
+                        } else {
+                            System.out.println("Cancelled next iteration.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.println(this.showFinalYearAllocations());
+                        System.out.print("Are you sure you want to finalize the allotment? (y/n)");
+                        String confirm = sc.next();
+                        if (confirm.equals("y")) {
+                            this.finalizeFinalYearAllocations(new File("src\\FinalYearAllotments.txt"));
+                            System.out.println("Allotment finalized.");
+                        } else {
+                            System.out.println("Allotment not finalized.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.FINAL_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 
                 case FINAL_YEAR_STUDENTS:
+                    System.out.println("Final Year Students");
+                    System.out.println("1. View Students");
+                    System.out.println("2. Add Student");
+                    System.out.println("3. Remove Student");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to view student details: ");
+                        String rollNumber = sc.next();
+
+                        FinalYear tempStudent = null;
+                        for (FinalYear student : this.getFinalYearStudents()) {
+                            if (student.getId().equals(rollNumber)) {
+                                tempStudent = student;
+                                break;
+                            }
+                        }
+
+                        if (tempStudent != null) {
+                            System.out.println(tempStudent);
+                        } else {
+                            System.out.println("Student not found.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        App.clearScreen();
+                        System.out.println("Enter student details: ");
+                        System.out.print("Name: ");
+                        String name = sc.next();
+                        System.out.print("CGPA: ");
+                        float cgpa = sc.nextFloat();
+                        while (cgpa < 0 || cgpa > 10) {
+                            System.out.println("Invalid CGPA. Please enter a valid CGPA: ");
+                            cgpa = sc.nextFloat();
+                        }
+                        System.out.print("ID: ");
+                        String id = sc.next();
+                        System.out.print("Branch: ");
+                        String branch = sc.next();
+                        ArrayList<String> subjects;
+                        while (true) {
+                            System.out.println("Enter subjects (Enter 'done' to stop): ");
+                            subjects = new ArrayList<>();
+                            String subject;
+                            while (true) {
+                                subject = sc.next();
+                                if (subject.equals("done")) {
+                                    break;
+                                }
+                                subjects.add(subject);
+                            }
+
+                            if (subjects.size() == 0) {
+                                System.out.println("Please enter at least one subject.");
+                            } else {
+                                break;
+                            }
+                        }
+
+                        FinalYear student = new FinalYear(name, cgpa, id, branch, subjects, null);
+                        this.addFinalYearStudent(student);
+                        System.out.println("Student added successfully.");
+                        pressEnterToContinue(sc);
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to remove student: ");
+                        String rollNumber = sc.next();
+
+                        FinalYear tempStudent = null;
+                        for (FinalYear student : this.getFinalYearStudents()) {
+                            if (student.getId().equals(rollNumber)) {
+                                tempStudent = student;
+                                break;
+                            }
+                        }
+
+                        if (tempStudent != null) {
+                            ArrayList<FinalYear> finalYearStudents = this.getFinalYearStudents();
+                            finalYearStudents.remove(tempStudent);
+                            this.setFinalYearStudents(finalYearStudents);
+                            System.out.println("Student removed.");
+                        } else {
+                            System.out.println("Student not found.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.FINAL_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 
                 case FINAL_YEAR_STATIONS:
+                    System.out.println("Final Year Stations");
+                    System.out.println("1. View Stations");
+                    System.out.println("2. Add Stations");
+                    System.out.println("3. Edit Station");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        int id = -1;
+                        try {
+                            System.out.print("Enter ID to view station details: ");
+                            id = sc.nextInt();
+                        } catch (Exception e) {
+                            
+                        }
+
+                        Station tempStation = null;
+                        if (this.getFinalYearStations().containsKey(id)) {
+                            tempStation = this.getFinalYearStations().get(id);
+                        }
+
+                        if (tempStation == null) {
+                            System.out.println("Station not found.");
+                        } else {
+                            System.out.println(tempStation);
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        App.clearScreen();
+                        System.out.print("Enter path of file containing stations: ");
+                        String path = sc.next();
+                        File file = new File(path);
+                        if (!file.exists()) {
+                            System.out.println("File not found.");
+                            pressEnterToContinue(sc);
+                            break;
+                        } else {
+                            this.addFinalYearStations(file);
+                            System.out.println("Stations added successfully.");
+                            pressEnterToContinue(sc);
+                        }
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.print("Enter ID to edit station: ");
+                        int id = sc.nextInt();
+                        if (!this.getFinalYearStations().containsKey(id)) {
+                            System.out.println("Station not found.");
+                            pressEnterToContinue(sc);
+                            break;
+                        }
+
+                        Station station = this.getFinalYearStations().get(id);
+                        System.out.println("Editing " + station.getName());
+                        System.out.println(station);
+                        System.out.println("Enter new details: ");
+                        System.out.print("Stipend: ");
+                        int stipend = 0;
+                        try {
+                            stipend = sc.nextInt();
+                        } catch (Exception e) {
+
+                        }
+                        station.setStipend(stipend);
+                        System.out.print("Location: ");
+                        String location = sc.next();
+                        station.setLocation(location);
+                        this.getFinalYearStations().put(id, station);
+
+                        System.out.println("Station edited successfully.");
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.FINAL_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
             }
         }
@@ -254,9 +731,20 @@ public class Admin implements Runnable {
     private void finalizeSecondYearAllocations(File file) {
         try {
             FileWriter fw = new FileWriter(file);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(this.showSecondYearAllocations());
-            bw.close();
+            fw.write(this.showSecondYearAllocations());
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void finalizeFinalYearAllocations(File file) {
+        try {
+            FileWriter fw = new FileWriter(file);
+            fw.write(this.showFinalYearAllocations());
+            fw.flush();
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -267,7 +755,7 @@ public class Admin implements Runnable {
     }
 
     public void pressEnterToContinue(Scanner sc) {
-        System.out.println("Press Enter key to continue...");
+        System.out.print("\nPress Enter key to continue...");
         try {
             System.in.read();
             sc.nextLine();
@@ -280,7 +768,7 @@ public class Admin implements Runnable {
         String result = "";
         HashMap<SecondYear, Station> allocations = this.getSecondYearAllocations();
         for (Map.Entry<SecondYear, Station> entry : allocations.entrySet()) {
-            result += entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+            result += entry.getKey().getId() + " " + entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
         }
 
         return result;

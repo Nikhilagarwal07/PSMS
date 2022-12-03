@@ -9,6 +9,11 @@ public class FinalYear extends Student {
         this.resume = resume;
     }
 
+    public FinalYear(String name, float cgpa, String id, String branch, ArrayList<String> subjects, String resume) {
+        super(name, cgpa, id, branch, subjects);
+        this.resume = resume;
+    }
+
     public String getResume() {
         return this.resume;
     }

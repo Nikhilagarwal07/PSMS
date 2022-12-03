@@ -7,17 +7,24 @@ public class Station {
     private int occupied;
     private ArrayList<String> compulsorySubjects;
     private ArrayList<String> branches;
+    private int stipend;
+    private String location;
 
-    public Station(int id, String name, int capacity, ArrayList<String> compulsorySubjects, ArrayList<String> branches) {
+    public Station(int id, String name, int capacity, ArrayList<String> compulsorySubjects, ArrayList<String> branches, int stipend, String location) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
         this.occupied = 0;
         this.compulsorySubjects = compulsorySubjects;
         this.branches = branches;
+        this.stipend = stipend;
+        this.location = location;
     }
 
     public Station(String line) {
+        // This constructor is used to create a Station object from a line of text
+        // format of the line: id,name,capacity,<compulsorySubjects>,branches,stipend,location
+
         try {
             String[] data = line.split(",");
     
@@ -26,15 +33,18 @@ public class Station {
             this.capacity = Integer.parseInt(data[2]);
             this.occupied = 0;
             this.compulsorySubjects = new ArrayList<String>();
-            for (int i = 3; i < data.length - 1; i++) {
+            for (int i = 3; i < data.length - 3; i++) {
                 this.compulsorySubjects.add(data[i]);
             }
     
             this.branches = new ArrayList<String>();
-            String[] branchData = data[data.length - 1].split(" ");
+            String[] branchData = data[data.length - 3].split(" ");
             for (int i = 0; i < branchData.length; i++) {
                 this.branches.add(branchData[i]);
             }
+
+            this.stipend = Integer.parseInt(data[data.length - 2]);
+            this.location = data[data.length - 1];
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Error occured while parsing line in Station constructor.");
             e.printStackTrace();
@@ -77,6 +87,14 @@ public class Station {
         return this.branches;
     }
 
+    public int getStipend() {
+        return this.stipend;
+    }
+
+    public String getLocation() {
+        return this.location;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -101,7 +119,15 @@ public class Station {
         this.branches = branches;
     }
 
+    public void setStipend(int stipend) {
+        this.stipend = stipend;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public String toString() {
-        return "Station " + this.id + " " + this.name + ", subjects = " + this.compulsorySubjects + " branches = " + this.branches;
+        return "Station " + this.id + " : " + this.name + " (" + this.location + ") " + "\nCompulsory Subjects = " + this.compulsorySubjects + "\nEligible Branches = " + this.branches + "\nStipend = Rs. " + this.stipend;
     }
 }

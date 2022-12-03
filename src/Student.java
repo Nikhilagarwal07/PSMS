@@ -6,7 +6,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
 
     protected String name;
     protected float cgpa;
-    protected int id;
+    protected String id;
     protected String branch;
     protected ArrayList<String> subjects;
     protected PreferenceOrder preferenceOrder;
@@ -22,7 +22,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
      */
     protected boolean finalized;
 
-    public Student(String name, float cgpa, int id, String branch, ArrayList<String> subjects) {
+    public Student(String name, float cgpa, String id, String branch, ArrayList<String> subjects) {
         this.t = new Thread(this, "Student");
 
         this.name = name;
@@ -52,7 +52,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
 
             this.cgpa = Float.parseFloat(data[1]);
 
-            this.id = Integer.parseInt(data[2]);
+            this.id = data[2];
 
             this.branch = data[3];
 
@@ -79,7 +79,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
     }
 
     public String toString() {
-        return this.name + ", " + this.cgpa + ", " + this.id + ", " + this.branch + ", " + this.subjects;
+        return this.id + ", " + this.name+ ", CGPA = " + this.cgpa + ", " + this.branch + ", " + this.subjects;
     }
 
     public String getName() {
@@ -90,7 +90,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
         return this.cgpa;
     }
 
-    public int getId() {
+    public String getId() {
         return this.id;
     }
 
@@ -110,7 +110,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
         this.cgpa = cgpa;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -150,13 +150,7 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
         } else if (this.cgpa < student.getCgpa()) {
             return 1;
         } else {
-            if (this.id < student.getId()) {
-                return -1;
-            } else if (this.id > student.getId()) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return 0;
         }
     }
 
