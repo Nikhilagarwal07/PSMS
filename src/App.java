@@ -10,7 +10,7 @@ public class App {
 
     public static void clearScreen() {  
         System.out.print("\033[H\033[2J");  
-        System.out.flush();  
+        System.out.flush();
     }
 
     public static void main(String[] args) throws Exception {
@@ -85,6 +85,7 @@ public class App {
         Scanner sc = new Scanner(System.in);
         boolean isRunning = true;
         State state = State.HOME;
+        int choice;
 
         while (isRunning) {
             clearScreen();
@@ -97,24 +98,34 @@ public class App {
                     System.out.println("3. Exit");
                     System.out.print("Enter your choice: ");
                     
-                    int choice = sc.nextInt();
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
                     
                     if (choice == 1) {
                         state = State.ADMIN_LOGIN;
-                        clearScreen();
                     } else if (choice == 2) {
                         state = State.STUDENT_LOGIN;
-                        clearScreen();
                     } else if (choice == 3) {
                         isRunning = false;
-                        clearScreen();
-                    } else if (choice == 4) {
-                        clearScreen();
                     } else {
-                        clearScreen();
-                        System.out.println("Invalid choice");
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-
                     break;
                 
                 case ADMIN_LOGIN:
@@ -124,23 +135,26 @@ public class App {
 
                     if (password.equals("p")) {
                         state = State.ADMIN_HOME;
-                        clearScreen();
                     } else {
-                        System.out.println("Invalid password");
                         try {
+                            System.out.println("Invalid password");
                             Thread.sleep(2000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
                         state = State.HOME;
-                        clearScreen();
                     }
-
                     break;
                 
                 case STUDENT_LOGIN:
-                    System.out.println("Student Login");
+                    try {
+                        System.out.println("Student Login");
+                        Thread.sleep(2000);
+                        state = State.HOME;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 case ADMIN_HOME:

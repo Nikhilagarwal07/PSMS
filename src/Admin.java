@@ -9,12 +9,26 @@ public class Admin implements Runnable {
      * and destroyed at logout.
      */
 
+    enum State {
+        HOME,
+        SECOND_YEAR,
+        FINAL_YEAR,
+        SECOND_YEAR_ALLOTMENT,
+        SECOND_YEAR_STUDENTS,
+        SECOND_YEAR_STATIONS,
+        FINAL_YEAR_ALLOTMENT,
+        FINAL_YEAR_STUDENTS,
+        FINAL_YEAR_STATIONS,
+    }
+
     public Thread t;
     public Scanner sc;
     private volatile boolean isRunning = true;
+    private State state;
 
     public Admin(Scanner sc) {
         this.sc = sc;
+        this.state = State.HOME;
     }
 
     public void start() {
@@ -25,52 +39,261 @@ public class Admin implements Runnable {
     }
 
     public void run() {
+        int choice;
+
         while (this.isRunning) {
-            // do something
             App.clearScreen();
 
-            System.out.println("Admin Home");
-            System.out.println("1. Show Students");
-            System.out.println("9. Logout");
-            System.out.print("Enter your choice: ");
-            
-            int adminChoice = sc.nextInt();
-            if (adminChoice == 1) {
-                App.clearScreen();
-                ArrayList<SecondYear> students = getSecondYearStudents();
-                for (SecondYear student : students) {
-                    System.out.println(student.getName() + "\t" + student.getCgpa());
-                }
+            switch (state) {
+                case HOME:
+                    System.out.println("Admin Home");
+                    System.out.println("1. Second Year");
+                    System.out.println("2. Final Year");
+                    System.out.println("3. Logout");
+                    System.out.print("Enter your choice: ");
+                    
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        sc.nextLine();
+                        break;
+                    }
+                    
+                    if (choice == 1) {
+                        state = State.SECOND_YEAR;
+                    } else if (choice == 2) {
+                        state = State.FINAL_YEAR;
+                    } else if (choice == 3) {
+                        try {
+                            System.out.println("Logging out...");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+        
+                        this.stop();
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                
+                case SECOND_YEAR:
+                    System.out.println("Second Year Menu");
+                    System.out.println("1. Allotment");
+                    System.out.println("2. Manage Students");
+                    System.out.println("3. Manage Stations");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+                    
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
 
-                System.out.println("Hello world");
-            } else if (adminChoice == 9) {
-                try {
-                    System.out.println("Exiting...");
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        sc.nextLine();
+                        break;
+                    }
 
-                this.stop();
-            } else {
-                try {
-                    System.out.println("Invalid choice");
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    if (choice == 1) {
+                        state = State.SECOND_YEAR_ALLOTMENT;
+                    } else if (choice == 2) {
+                        state = State.SECOND_YEAR_STUDENTS;
+                    } else if (choice == 3) {
+                        state = State.SECOND_YEAR_STATIONS;
+                    } else if (choice == 4) {
+                        state = State.HOME;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    
+                    break;
+
+                case FINAL_YEAR:
+                    System.out.println("Final Year Menu");
+                    System.out.println("1. Allotment");
+                    System.out.println("2. Manage Students");
+                    System.out.println("3. Manage Stations");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+                    
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        state = State.FINAL_YEAR_ALLOTMENT;
+                    } else if (choice == 2) {
+                        state = State.FINAL_YEAR_STUDENTS;
+                    } else if (choice == 3) {
+                        state = State.FINAL_YEAR_STATIONS;
+                    } else if (choice == 4) {
+                        state = State.HOME;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                
+                case SECOND_YEAR_ALLOTMENT:
+                    System.out.println("Second Year Allotment");
+                    System.out.println("1. View Current Allotment");
+                    System.out.println("2. Next Iteration");
+                    System.out.println("3. Finalize Allotment");
+                    System.out.println("4. Back");
+                    System.out.print("Enter your choice: ");
+
+                    try {
+                        choice = sc.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Please enter a number");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ie) {
+                            ie.printStackTrace();
+                        }
+
+                        sc.nextLine();
+                        break;
+                    }
+
+                    if (choice == 1) {
+                        App.clearScreen();
+                        System.out.println(this.showSecondYearAllocations());
+                        pressEnterToContinue(sc);
+                    } else if (choice == 2) {
+                        System.out.println("Are you sure you want to get next iteration? (y/n)");
+                        String confirm = sc.next();
+                        if (confirm.equals("y")) {
+                            Allocator.allocate(this.getSecondYearAllocations(), this.getSecondYearStudents());
+                            System.out.println("Next Iteration completed.");
+                        } else {
+                            System.out.println("Cancelled next iteration.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 3) {
+                        App.clearScreen();
+                        System.out.println(this.getSecondYearAllocations());
+                        System.out.println("Are you sure you want to finalize the allotment? (y/n)");
+                        String confirm = sc.next();
+                        if (confirm.equals("y")) {
+                            this.finalizeSecondYearAllocations(new File("FinalSecondYearAllotments.txt"));
+                            System.out.println("Allotment finalized.");
+                        } else {
+                            System.out.println("Allotment not finalized.");
+                        }
+
+                        pressEnterToContinue(sc);
+                    } else if (choice == 4) {
+                        state = State.SECOND_YEAR;
+                    } else {
+                        try {
+                            System.out.println("Invalid choice");
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    break;
+                
+                case SECOND_YEAR_STUDENTS:
+                    break;
+                
+                case SECOND_YEAR_STATIONS:
+                    break;
+                
+                case FINAL_YEAR_ALLOTMENT:
+                    break;
+                
+                case FINAL_YEAR_STUDENTS:
+                    break;
+                
+                case FINAL_YEAR_STATIONS:
+                    break;
             }
+        }
+    }
+
+    private void finalizeSecondYearAllocations(File file) {
+        try {
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(this.showSecondYearAllocations());
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void stop() {
         this.isRunning = false;
+    }
+
+    public void pressEnterToContinue(Scanner sc) {
+        System.out.println("Press Enter key to continue...");
+        try {
+            System.in.read();
+            sc.nextLine();
+        } catch(Exception e) {
+            e.printStackTrace();
+        } 
+    }
+
+    public String showSecondYearAllocations() {
+        String result = "";
+        HashMap<SecondYear, Station> allocations = this.getSecondYearAllocations();
+        for (Map.Entry<SecondYear, Station> entry : allocations.entrySet()) {
+            result += entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+        }
+
+        return result;
+    }
+
+    public String showFinalYearAllocations() {
+        String result = "";
+        HashMap<FinalYear, Station> allocations = this.getFinalYearAllocations();
+        for (Map.Entry<FinalYear, Station> entry : allocations.entrySet()) {
+            result += entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+        }
+
+        return result;
     }
 
     public HashMap<Integer, Station> getSecondYearStations() {
@@ -274,12 +497,3 @@ public class Admin implements Runnable {
         }
     }
 }
-
-// System.out.println("1. Add Second Year Stations");
-// System.out.println("2. Add Second Year Students");
-// System.out.println("3. Allocate Second Year Students");
-// System.out.println("4. Freeze Second Year Allocations");
-// System.out.println("5. Add Final Year Stations");
-// System.out.println("6. Add Final Year Students");
-// System.out.println("7. Allocate Final Year Students");
-// System.out.println("8. Freeze Final Year Allocations");
