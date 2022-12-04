@@ -824,7 +824,11 @@ public class Admin implements Runnable {
         String result = "";
         HashMap<FinalYear, Station> allocations = this.getFinalYearAllocations();
         for (Map.Entry<FinalYear, Station> entry : allocations.entrySet()) {
-            result += entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+            if (entry.getValue() == null) {
+                result += entry.getKey().getId() + " " + entry.getKey().getName() + " - Not allocated\n";
+            } else {
+                result += entry.getKey().getId() + " " + entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+            }
         }
 
         return result;
