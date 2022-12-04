@@ -1,9 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Student implements Eligible, Comparable<Student>, Runnable {
-    public Thread t;
-
+public class Student implements Eligible, Comparable<Student> {
     protected String name;
     protected float cgpa;
     protected String id;
@@ -23,8 +21,6 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
     protected boolean finalized;
 
     public Student(String name, float cgpa, String id, String branch, ArrayList<String> subjects) {
-        this.t = new Thread(this, "Student");
-
         this.name = name;
         this.cgpa = cgpa;
         this.id = id;
@@ -41,8 +37,6 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
     }
 
     public Student(File studentFile, File preferenceOrderFile, HashMap<Integer, Station> stations) {
-        this.t = new Thread(this, "Student");
-
         try {
             Scanner sc = new Scanner(studentFile);
             String line = sc.nextLine();
@@ -131,16 +125,22 @@ public class Student implements Eligible, Comparable<Student>, Runnable {
     }
 
     public void addStation(Station station) {
-        this.preferenceOrder.addStation(station);
+        if (this.preferenceOrder != null) {
+            this.preferenceOrder.addStation(station);
+        }
     }
 
     public void addStations(ArrayList<Station> stations) {
-        this.preferenceOrder.addStations(stations);
+        if (this.preferenceOrder != null) {
+            this.preferenceOrder.addStations(stations);
+        }
     }
 
     public void addStations(HashMap<Integer, Station> stations) {
-        for (Map.Entry<Integer, Station> stationsElement : stations.entrySet()) {
-            this.preferenceOrder.addStation(stationsElement.getValue());
+        if (this.preferenceOrder != null) {
+            for (Map.Entry<Integer, Station> stationsElement : stations.entrySet()) {
+                this.preferenceOrder.addStation(stationsElement.getValue());
+            }
         }
     }
 

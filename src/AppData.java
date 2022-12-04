@@ -13,8 +13,6 @@ public class AppData {
     private static ArrayList<FinalYear> finalYearStudents = new ArrayList<FinalYear>();
     private static HashMap<SecondYear, Station> secondYearAllocations = new HashMap<SecondYear, Station>();
     private static HashMap<FinalYear, Station> finalYearAllocations = new HashMap<FinalYear, Station>();
-    private static boolean secondYearAllocationsDone = false;
-    private static boolean finalYearAllocationsDone = false;
 
     public static HashMap<Integer, Station> getSecondYearStations() {
         return AppData.secondYearStations;

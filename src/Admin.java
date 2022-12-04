@@ -3,14 +3,14 @@ import java.io.*;
 
 public class Admin implements Runnable {
     /*
-     * This is the Admin class. 
+     * This is the Admin class.
      * It is used for allotment, managing students, and managing stations.
      * Only one instance of admin will be available at a time, created at login
      * and destroyed at logout. This doesn't affect the program data; all the data
      * is stored in the AppData class.
      */
 
-    enum State {
+    private enum State {
         HOME,
         SECOND_YEAR,
         FINAL_YEAR,
@@ -40,6 +40,12 @@ public class Admin implements Runnable {
     }
 
     public void run() {
+        /*
+         * This is the main method of the Admin class.
+         * It is used to run the admin thread.
+         * It contains the admin menus and associated methods.
+         */
+
         int choice;
 
         while (this.isRunning) {
@@ -201,7 +207,7 @@ public class Admin implements Runnable {
                         System.out.print("Are you sure you want to get next iteration? (y/n) ");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
-                            Allocator.allocate(this.getSecondYearAllocations(), this.getSecondYearStudents());
+                            this.setSecondYearAllocations(Allocator.allocate(this.getSecondYearAllocations(), this.getSecondYearStudents()));
                             System.out.println("Next Iteration completed.");
                         } else {
                             System.out.println("Cancelled next iteration.");
@@ -211,7 +217,7 @@ public class Admin implements Runnable {
                     } else if (choice == 3) {
                         App.clearScreen();
                         System.out.println(this.showSecondYearAllocations());
-                        System.out.print("Are you sure you want to finalize the allotment? (y/n)");
+                        System.out.print("Are you sure you want to finalize the allotment? (y/n) ");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
                             this.finalizeSecondYearAllocations(new File("src\\SecondYearAllotments.txt"));
@@ -310,8 +316,11 @@ public class Admin implements Runnable {
                             }
                         }
 
-                        SecondYear student = new SecondYear(name, cgpa, id, branch, subjects);
+                        SecondYear student = new SecondYear(name, cgpa, id, branch, subjects, sc);
                         this.addSecondYearStudent(student);
+                        HashMap<SecondYear, Station> allocations = this.getSecondYearAllocations();
+                        allocations.put(student, null);
+                        this.setSecondYearAllocations(allocations);
                         System.out.println("Student added successfully.");
                         pressEnterToContinue(sc);
                     } else if (choice == 3) {
@@ -331,6 +340,9 @@ public class Admin implements Runnable {
                             ArrayList<SecondYear> secondYearStudents = this.getSecondYearStudents();
                             secondYearStudents.remove(tempStudent);
                             this.setSecondYearStudents(secondYearStudents);
+                            HashMap<SecondYear, Station> secondYearAllocations = this.getSecondYearAllocations();
+                            secondYearAllocations.remove(tempStudent);
+                            this.setSecondYearAllocations(secondYearAllocations);
                             System.out.println("Student removed.");
                         } else {
                             System.out.println("Student not found.");
@@ -478,7 +490,7 @@ public class Admin implements Runnable {
                         System.out.print("Are you sure you want to get next iteration? (y/n) ");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
-                            Allocator.allocate(this.getFinalYearAllocations(), this.getFinalYearStudents());
+                            this.setFinalYearAllocations(Allocator.allocate(this.getFinalYearAllocations(), this.getFinalYearStudents()));
                             System.out.println("Next Iteration completed.");
                         } else {
                             System.out.println("Cancelled next iteration.");
@@ -488,7 +500,7 @@ public class Admin implements Runnable {
                     } else if (choice == 3) {
                         App.clearScreen();
                         System.out.println(this.showFinalYearAllocations());
-                        System.out.print("Are you sure you want to finalize the allotment? (y/n)");
+                        System.out.print("Are you sure you want to finalize the allotment? (y/n) ");
                         String confirm = sc.next();
                         if (confirm.equals("y")) {
                             this.finalizeFinalYearAllocations(new File("src\\FinalYearAllotments.txt"));
@@ -587,8 +599,11 @@ public class Admin implements Runnable {
                             }
                         }
 
-                        FinalYear student = new FinalYear(name, cgpa, id, branch, subjects, null);
+                        FinalYear student = new FinalYear(name, cgpa, id, branch, subjects, null, sc);
                         this.addFinalYearStudent(student);
+                        HashMap<FinalYear, Station> allocations = this.getFinalYearAllocations();
+                        allocations.put(student, null);
+                        this.setFinalYearAllocations(allocations);
                         System.out.println("Student added successfully.");
                         pressEnterToContinue(sc);
                     } else if (choice == 3) {
@@ -608,6 +623,9 @@ public class Admin implements Runnable {
                             ArrayList<FinalYear> finalYearStudents = this.getFinalYearStudents();
                             finalYearStudents.remove(tempStudent);
                             this.setFinalYearStudents(finalYearStudents);
+                            HashMap<FinalYear, Station> finalYearAllocations = this.getFinalYearAllocations();
+                            finalYearAllocations.remove(tempStudent);
+                            this.setFinalYearAllocations(finalYearAllocations);
                             System.out.println("Student removed.");
                         } else {
                             System.out.println("Student not found.");
@@ -729,6 +747,18 @@ public class Admin implements Runnable {
     }
 
     private void finalizeSecondYearAllocations(File file) {
+        /* Set all SecondYear students to accepted. Students without station are withdrawn. */
+        for (SecondYear student : this.getSecondYearStudents()) {
+            if (AppData.getSecondYearAllocations().get(student) == null) {
+                HashMap<SecondYear, Station> currAllocation = AppData.getSecondYearAllocations();
+                currAllocation.remove(student);
+                AppData.setSecondYearAllocations(currAllocation);
+                student.withdraw();
+            } else {
+                student.accept();
+            }
+        }
+
         try {
             FileWriter fw = new FileWriter(file);
             fw.write(this.showSecondYearAllocations());
@@ -740,6 +770,18 @@ public class Admin implements Runnable {
     }
 
     private void finalizeFinalYearAllocations(File file) {
+        /* Set all FinalYear students to accepted. Students without station are withdrawn. */
+        for (FinalYear student : this.getFinalYearStudents()) {
+            if (AppData.getFinalYearAllocations().get(student) == null) {
+                HashMap<FinalYear, Station> currAllocation = AppData.getFinalYearAllocations();
+                currAllocation.remove(student);
+                AppData.setFinalYearAllocations(currAllocation);
+                student.withdraw();
+            } else {
+                student.accept();
+            }
+        }
+
         try {
             FileWriter fw = new FileWriter(file);
             fw.write(this.showFinalYearAllocations());
@@ -768,7 +810,11 @@ public class Admin implements Runnable {
         String result = "";
         HashMap<SecondYear, Station> allocations = this.getSecondYearAllocations();
         for (Map.Entry<SecondYear, Station> entry : allocations.entrySet()) {
-            result += entry.getKey().getId() + " " + entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+            if (entry.getValue() == null) {
+                result += entry.getKey().getId() + " " + entry.getKey().getName() + " - Not allocated\n";
+            } else {
+                result += entry.getKey().getId() + " " + entry.getKey().getName() + " - " + entry.getValue().getName() + "\n";
+            }
         }
 
         return result;
@@ -918,7 +964,7 @@ public class Admin implements Runnable {
     }
     
     public void addSecondYearStudent(File studentFile, File preferenceOrderFile) {
-        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile, AppData.getSecondYearStations());
+        SecondYear newStudent = new SecondYear(studentFile, preferenceOrderFile, AppData.getSecondYearStations(), sc);
         this.addSecondYearStudent(newStudent);
     }
     
@@ -929,7 +975,7 @@ public class Admin implements Runnable {
     }
     
     public void addFinalYearStudent(File studentFile, File preferenceOrderFile, String resume) {
-        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, AppData.getFinalYearStations(), resume);
+        FinalYear newStudent = new FinalYear(studentFile, preferenceOrderFile, AppData.getFinalYearStations(), resume, sc);
         this.addFinalYearStudent(newStudent);
     }
     

@@ -59,14 +59,21 @@ public class Allocator {
                 /* accepted students are done */
                 continue;
             } else if (student.hasRejected()) {
-                ArrayList<Station> stations = student.getPreferenceOrder().getOrder();
-                for (Station station : stations) {
-                    if (student.isEligible(station) && station.hasVacancy()) {
-                        newAllotment.put(student, station);
-                        station.incrementOccupied();
-                        break;
+                if (student.getPreferenceOrder() == null) {
+                    /* student has no preference order */
+                    newAllotment.put(student, null);
+                    continue;
+                } else {
+                    ArrayList<Station> stations = student.getPreferenceOrder().getOrder();
+                    for (Station station : stations) {
+                        if (student.isEligible(station) && station.hasVacancy()) {
+                            newAllotment.put(student, station);
+                            station.incrementOccupied();
+                            break;
+                        }
                     }
                 }
+
             } else if (student.hasWithdrawn()) {
                 /* withdrawn students are done */
                 continue;
